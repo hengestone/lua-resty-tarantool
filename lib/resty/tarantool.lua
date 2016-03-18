@@ -23,6 +23,7 @@ local sub = string.sub
 local gsub = string.gsub
 local sbyte = string.byte
 local schar = string.char
+local sfind = string.find
 local slen = string.len
 local format = string.format
 local match = string.match
@@ -512,7 +513,12 @@ function M.connect(self, host, port)
     return nil, 'No socket created.'
   end
   -- Connect to the server,
-  local ok, err = self.sock:connect(host or self.host, port or self.port)
+  local conn_host = host or self.host
+  if sfind(conn_host, 'unix:/') then
+    local ok, err = self.sock:connect(host or self.host)
+  else
+    local ok, err = self.sock:connect(host or self.host, port or self.port)
+  end
   if not ok then
     return ok, err
   end
